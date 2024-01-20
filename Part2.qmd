@@ -1,0 +1,42 @@
+---
+title: "Homework Assignment #1" 
+subtitle: "Part II"
+author: "Benjamin Versteeg"
+date: 2024-01-20
+toc: true
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+**For the full assignment description and grading specifications, please see the course website: <https://samanthacsik.github.io/EDS-240-data-viz/assignments/HW1.html>**
+
+# Describe your data:
+
+-   *Link to (or otherwise prove the existence of) at least one data set that you plan to use for Assignment #4*
+
+    **https://catalog.data.gov/dataset/biodiversity-by-county-distribution-of-animals-plants-and-natural-communities**
+
+# Answer the following questions:
+
+1.  *Describe your data set(s). Be sure to address the following:* **(\<=4 sentences each)**
+
+    -   *Where did you find these data?*
+
+        **I found this dataset on data.gov's catalog. I did look for the general type of dataset I was searching for in google though.**
+
+    -   *What variables does it contain? Is there sufficient metadata for understanding what those variables are?*
+
+        **The dataset contains many useful variables such as county, species details, and state and federal listing status. The dataset is pretty intuitive but there is also sufficient metadata**
+
+2.  *What steps are involved in downloading or accessing the data (e.g. "I can download using a button via this online portal," "There's an R package for scraping the data," "I need to use an API to scrape the data," etc.)?* **(1-2 sentences)**
+
+    **Click a button via the link pasted earlier to download the csv.**
+
+3.  *What question(s) do you want to answer using these data (it's okay if these questions evolve over time)?* **(\<=4 sentences)**
+
+    **I don't have a specific question yet but I'm thinking I want to do something with endangered species in the different new york counties and how agriculture or urbanization affects their location.**
+
+4.  *Will you need to combine multiple data sets to successfully answer your question(s)? If so, have you found all the necessary data? Do you have a way to combine it?* **(\<=4 sentences)**
+
+    **I will definitely need to find another data set dealing with urbanization or agriculture and most likely combine it with this dataset. Shouldn't be too hard to find or combine though.**
