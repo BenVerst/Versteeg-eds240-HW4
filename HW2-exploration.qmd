@@ -4,7 +4,9 @@ subtitle: "Part II"
 author: "Benjamin Versteeg"
 date: 2024-02-03
 toc: true
-format: html
+format:
+  html:
+    embed-resources: true
 editor_options: 
   chunk_output_type: console
 ---
@@ -141,3 +143,29 @@ I was able to make some steps to answer these questions when analyzing the data.
 #### 3. What challenges do you foresee encountering with your data? These can be data wrangling and / or visualization challenges. (4-6 sentences)
 
 I think a big challenge with this data is being able to clearly visualize a mass amount of information. There is a lot of data in the data set and being able to show what I want without the graphs being cluttered or messy will be hard. The box/violin plot I made is an example of how working with this data is challenging. There's a lot of variability so unless I focus on specific things, the plots tend to end up super zoomed out and makes it impossible to understand anything.
+
+Figure for discussion
+
+```{r}
+vgsales_clean %>%
+  filter(grepl("pokemon|zelda|mario", tolower(name))) %>% # Filters to Pokemon, Zelda, and Mario games
+  mutate(series = case_when(
+    grepl("mario", tolower(name)) ~ "Mario",
+    grepl("zelda", tolower(name)) ~ "Zelda",
+    grepl("pokemon", tolower(name)) ~ "Pokemon")) %>%
+  group_by(series) %>%
+  summarise(total_sales = sum(global_sales)) %>%
+  ggplot(aes(x = series, y = total_sales, fill = series)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Global Sales of Mario, Pokemon, and Zelda Games (<=2017)",
+       x = "Game Series",
+       y = "Total Global Sales (in millions)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("Mario" = "darkred", "Zelda" = "darkolivegreen", "Pokemon" = "darkblue")) +
+  scale_y_continuous(labels = scales::comma, breaks = seq(0, 600, by = 100)) +
+  theme(legend.position = "none")
+
+```
+
+Make a time series
