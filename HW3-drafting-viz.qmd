@@ -1,0 +1,50 @@
+---
+title: "Homework Assignment #2" 
+subtitle: "Part II"
+author: "Benjamin Versteeg"
+date: 2024-02-03
+toc: true
+format:
+  html:
+    embed-resources: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+library(ggtern)
+```
+
+```{r}
+vgsales <- read_csv("data/vgsales.csv")
+
+vgsales_clean <- vgsales %>%
+  janitor::clean_names() %>% # Cleans column names
+  filter(year <= 2017) # Filters to 2017 and before bc it removes the NA values and an unnessary data point
+```
+
+```{r}
+filtered_vg <- vgsales_clean %>%
+  filter(publisher %in% c("Nintendo", "Bethesda Softworks", "Sony Computer Entertainment", "Sega", "Microsoft Game Studios", "Ubisoft", "Epic Games", "Activision Blizzard", "Namco Bandai Games"))
+```
+
+
+```{r}
+publisher_sales <- filtered_vg %>%
+  group_by(publisher) %>%
+  summarise(na_sales = sum(na_sales),
+            jp_sales = sum(jp_sales),
+            eu_sales = sum(eu_sales))
+
+ggtern(data = publisher_sales, aes(x = na_sales, y = jp_sales, z = eu_sales, color = publisher)) +
+  geom_point(alpha = 0.5, size = 2) +  
+  geom_text(aes(label = publisher), size = 3, vjust = -1, angle = -45, check_overlap = TRUE) +
+  theme_bw() + 
+  labs(x = "N. America", y = "Japan", z = "Europe") +
+  theme_nomask() +
+  theme_noarrows() +
+  theme(legend.position = "none")
+
+```
+

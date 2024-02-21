@@ -25,7 +25,7 @@ Variables in the dataset:
 
 -   Name - The game's name
 
--   Platform - Platform of the games release (i.e. PC,PS4, etc.)
+-   Platform - Platform of the games release (i.e. PC, PS4, etc.)
 
 -   Year - Year of the game's release
 
