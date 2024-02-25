@@ -1,8 +1,8 @@
 ---
-title: "Homework Assignment #2" 
-subtitle: "Part II"
+title: "Homework Assignment #3" 
+subtitle: ""
 author: "Benjamin Versteeg"
-date: 2024-02-03
+date: 2024-02-24
 toc: true
 format:
   html:
@@ -11,40 +11,189 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r}
-library(tidyverse)
-library(ggtern)
-```
+1.  I will being choosing option 2.
 
-```{r}
-vgsales <- read_csv("data/vgsales.csv")
+2.  Overarching question: How has trends in gaming changed globaly between years 1980 and 2016?
+
+    -   Sub questions:
+
+        -   What are the total global game sales each year?
+
+        -   What are the best selling game genres each year?
+
+        -   What are the most popular game publishers each year?
+
+    -   My question(s) has changed slightly because instead of asking multiple random specific questions like "How do the different Nintendo platforms compare to each other by genre?" I decided to come up with a focused overarching question with sub questions. I decided to just compare variables globaly because, as Sevan mentioned, It's unfair to compare 2 continents (North America and Europe) to 1 country (Japan).
+
+3.  From my vgsales dataset, I will be using the platform, genre, publisher, year, and global sales variables. The platform is the platform which each game was released on. The genre is the genre of the game. The year is the year of the game's release. The global sales are the total worldwide sales. I may or may not add some names of games to include some more detail if my plots support it.
+
+4.  Other creator's visualizations
+
+    -   I really like [this visualization](https://www.techspot.com/images2/news/bigimage/2022/07/2022-07-08-image-3-p_1100.webp) of sales (in billion) of games from 2015 to 2021 with a forecast prediction of 2022 and 2023. It's very clear and I like how they put the number value above each bar. I'll be doing that in my plots.
+
+    -   [This visualization](https://cdn.statcdn.com/Infographic/images/normal/3599.jpeg) is a really easy way and clear way to display popular genres each year. I probably wont make a plot like this or at least change it up a lot because pie chart's are hard to read for comparing values. I do really like how it is set up though and the colors are very clear. I also like how they list what percentage of space each genre takes up and orders it in descending order. Will definitely take inspiration from their simple yet very clear style of plot.
+
+5\.
+
+![3 hand drawn preliminary visuals](figures/drawn_visuals.jpg){width="500"}
+
+*Made this before i realized that the data only goes to 2016*
+
+6.  
+
+Load in packages and data
+
+```{r message=FALSE, warning=FALSE}
+# Load packages
+library(tidyverse)
+library(patchwork)
+
+vgsales <- read_csv("data/vgsales.csv") # Read in data
 
 vgsales_clean <- vgsales %>%
   janitor::clean_names() %>% # Cleans column names
-  filter(year <= 2017) # Filters to 2017 and before bc it removes the NA values and an unnessary data point
+  filter(year <= 2016) # Filters to 2016 and before
 ```
 
-```{r}
-filtered_vg <- vgsales_clean %>%
-  filter(publisher %in% c("Nintendo", "Bethesda Softworks", "Sony Computer Entertainment", "Sega", "Microsoft Game Studios", "Ubisoft", "Epic Games", "Activision Blizzard", "Namco Bandai Games"))
-```
+1st Graph
 
-
-```{r}
-publisher_sales <- filtered_vg %>%
-  group_by(publisher) %>%
-  summarise(na_sales = sum(na_sales),
-            jp_sales = sum(jp_sales),
-            eu_sales = sum(eu_sales))
-
-ggtern(data = publisher_sales, aes(x = na_sales, y = jp_sales, z = eu_sales, color = publisher)) +
-  geom_point(alpha = 0.5, size = 2) +  
-  geom_text(aes(label = publisher), size = 3, vjust = -1, angle = -45, check_overlap = TRUE) +
-  theme_bw() + 
-  labs(x = "N. America", y = "Japan", z = "Europe") +
-  theme_nomask() +
-  theme_noarrows() +
-  theme(legend.position = "none")
+```{r warning=FALSE}
+# Aggregate global sales data by year
+global_sales <- aggregate(
+  list(global_sales = vgsales_clean$global_sales), # Creates a list where 'global_sales' is the name of the aggregated data.
+  list(year = vgsales_clean$year), # Creates a list where 'year' is the grouping variable.
+  sum # Sums up the global sales for each year.
+)
 
 ```
 
+```{r warning=FALSE}
+ggplot(global_sales, aes(x = year, y = global_sales)) +  # Specifies data and aesthetics for the plot
+  geom_line(color = "black", group = 1) +  # Adds a line layer with black color
+  geom_point(size = 2, aes(color = year)) +  # Adds points with color based on year
+  geom_text(aes(label = round(global_sales)), vjust = -2, size = 3) +  # Adds text labels with rounded global sales values
+  xlab("Year") +  # Adds x-axis label
+  ylab("Global Sales (in millions)") +  # Adds y-axis label
+  ggtitle("Number of Global Sales From 1980 to 2016") +  # Adds plot title
+  theme_minimal() +  # Applies a minimal theme
+  theme(
+    plot.title = element_text(family = "serif", size = 20),  # Customizes plot title
+    axis.title.y = element_text(family = "sans", size = 15, face = "bold"),  
+    # Customizes y-axis title
+    axis.title.x = element_text(family = "sans", size = 15, face = "bold"),  
+    # Customizes x-axis title
+    axis.text.x = element_text(family = "serif", face = "bold", size = 5),  
+    # Customizes x-axis text
+    axis.text.y = element_text(family = "serif", face = "italic", size = 13),  
+    # Customizes y-axis text
+    legend.position = "none"  # Removes legend
+  )
+
+```
+
+2nd Graph (only for 2008 right now but will eventually do one for each year) (realized a line plot would be a mess so I decided to do a pie chart instead of a line plot like in my hand drawn visual)
+
+```{r warning=FALSE}
+genre_distribution_2008 <- vgsales_clean %>%  # Creates a new data frame
+  filter(year == 2008) %>%  # Filter the data for year 2008
+  group_by(genre) %>%  # Group the data by genre
+  summarize(total_sales = sum(global_sales)) %>%  # Summarize the total sales for each genre
+  mutate(genre_proportion = total_sales / sum(total_sales))  # Calculates the proportion of sales for each genre
+
+```
+
+```{r warning=FALSE}
+ggplot(genre_distribution_2008, aes(x = "", y = genre_proportion, fill = genre)) +  # Create a pie chart
+  geom_bar(stat = "identity", color = "black") +  # Add bars for each genre
+  coord_polar("y") +  # Convert the plot to a polar coordinate system
+  geom_text(aes(label = paste0(genre, ": ", scales::percent(genre_proportion))),  
+            # Add labels with genre name and proportion
+            position = position_stack(vjust = 0.5),  # Labels for each slice
+            size = 3, angle = 0) +  # Set label size and angle
+  labs(title = "Genre Popularity in 2008") +  # Add plot title
+  theme_void() +  # Use a minimal theme without background elements
+  theme(legend.position = "none")  # Remove the legend
+
+```
+
+3rd Graph
+
+```{r warning=FALSE}
+# Identify the top 15 publishers based on total global sales
+top_15_publishers <- vgsales_clean %>%
+  group_by(publisher) %>%  # Group the data by publisher
+  summarize(total_global_sales = sum(global_sales, na.rm = TRUE), .groups = 'drop') %>%  # Calculate total global sales for each publisher
+  arrange(desc(total_global_sales)) %>%  # Arrange the data in descending order of total global sales
+  slice_head(n = 15) %>%  # Select the top 15 publishers
+  pull(publisher)  # Extract the publisher names as a vector
+
+# Filter the dataset to include data only from the top 15 publishers
+top_publisher_sales <- vgsales_clean %>%
+  filter(publisher %in% top_15_publishers)  # Keep rows where the publisher is one of the top 15
+
+# Convert the 'year' column to numeric format
+top_publisher_sales$year <- as.numeric(as.character(top_publisher_sales$year))
+
+
+```
+
+```{r warning=FALSE}
+ggplot(top_publisher_sales, mapping = aes(x = year, y = global_sales)) +
+  # Create a bar chart, specifying the 'identity' statistic to use the actual values of 'global_sales'
+  geom_bar(stat = "identity", 
+           # Map the fill and color of bars to 'publisher'
+           aes(fill = publisher, color = publisher),
+           # Set the size of the outline of the bars and transparency level
+           size = .1, alpha = .8) +
+  # Facet the chart by 'publisher' 
+  facet_wrap(~publisher) +
+  # Remove the x-axis label
+  xlab("") +
+  # Set the y-axis label
+  ylab("Global Sales (in millions)") +
+  # Add a title to the chart
+  ggtitle("Global Sales of Game Publishers From 1980 to 2016") +
+  # Use the 'minimal' theme
+  theme_minimal() +
+  # Customize the appearance of the plot title, axis titles, and axis text
+  theme(plot.title = element_text(family = "serif", size = 20),
+        axis.title.y = element_text(family = "sans", size = 15, face = "bold"),
+        axis.text.x = element_text(family = "serif", face = "bold", size = 5),
+        axis.text.y = element_text(family = "serif", face = "italic", size = 7),
+        legend.position = "none") +
+  # Adjust the x-axis to show years in increments of 5, based on the range of years in the dataset
+  scale_x_continuous(breaks = seq(min(top_publisher_sales$year),
+                                  max(top_publisher_sales$year), by = 5))
+
+```
+
+7.  
+    -   In my 2nd visualization, I've never made a pie chart before so I had to figure out how to do that. Also putting the genre and percentage in each slice was difficult for me to figure out. I'll eventually make it look neater with the slice labels aligned nicely in each slice. In my 3rd visualization, it was really rough to find and isolate the top 15 publishers from my data while also keeping the global sales and year column. After doing that, making the graph itself wasn't super hard.
+    -   For my visualizations, I really only need tidyverse (ggplot2). If I decide to make an advanced plot (like a sunburst or tree map), I'll definitely need to use something different. If I end up adding more detail or cool visuals to my plots, I'll most likely need other packages.
+    -   As for advice, I would like to know if grid lines on my 1st and 3rd visuals are necessary. I would also like to know if there is a better or cooler way to visualize the questions I am asking.
+
+```{r warning=FALSE}
+# filtered_vg <- vgsales_clean %>%
+#   filter(publisher %in% c("Nintendo", "Bethesda Softworks", "Sony Computer Entertainment", "Sega", "Microsoft Game Studios", "Ubisoft", "Epic Games", "Activision Blizzard", "Namco Bandai Games"))
+```
+
+```{r warning=FALSE}
+# library(ggtern)
+
+
+# publisher_sales <- filtered_vg %>%
+#   group_by(publisher) %>%
+#   summarise(na_sales = sum(na_sales),
+#             jp_sales = sum(jp_sales),
+#             eu_sales = sum(eu_sales))
+# 
+# ggtern(data = publisher_sales, aes(x = na_sales, y = jp_sales, z = eu_sales, color = publisher)) +
+#   geom_point(alpha = 0.5, size = 2) +  
+#   geom_text(aes(label = publisher), size = 3, vjust = -1, angle = -45, check_overlap = TRUE) +
+#   theme_bw() + 
+#   labs(x = "N. America", y = "Japan", z = "Europe") +
+#   theme_nomask() +
+#   theme_noarrows() +
+#   theme(legend.position = "none")
+
+```
