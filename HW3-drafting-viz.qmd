@@ -13,7 +13,7 @@ editor_options:
 
 1.  I will being choosing option 2.
 
-2.  Overarching question: How has trends in gaming changed globaly between years 1980 and 2016?
+2.  Overarching question: How has trends in gaming changed globally between years 1980 and 2016?
 
     -   Sub questions:
 
@@ -23,7 +23,7 @@ editor_options:
 
         -   What are the most popular game publishers each year?
 
-    -   My question(s) has changed slightly because instead of asking multiple random specific questions like "How do the different Nintendo platforms compare to each other by genre?" I decided to come up with a focused overarching question with sub questions. I decided to just compare variables globaly because, as Sevan mentioned, It's unfair to compare 2 continents (North America and Europe) to 1 country (Japan).
+    -   My question(s) has changed slightly because instead of asking multiple random specific questions like "How do the different Nintendo platforms compare to each other by genre?" I decided to come up with a focused overarching question with sub questions. I decided to just compare variables globally because, as Sevan mentioned, It's unfair to compare 2 continents (North America and Europe) to 1 country (Japan).
 
 3.  From my vgsales dataset, I will be using the platform, genre, publisher, year, and global sales variables. The platform is the platform which each game was released on. The genre is the genre of the game. The year is the year of the game's release. The global sales are the total worldwide sales. I may or may not add some names of games to include some more detail if my plots support it.
 
@@ -74,7 +74,7 @@ ggplot(global_sales, aes(x = year, y = global_sales)) +  # Specifies data and ae
   geom_text(aes(label = round(global_sales)), vjust = -2, size = 3) +  # Adds text labels with rounded global sales values
   xlab("Year") +  # Adds x-axis label
   ylab("Global Sales (in millions)") +  # Adds y-axis label
-  ggtitle("Number of Global Sales From 1980 to 2016") +  # Adds plot title
+  ggtitle("Number of Global Video Game Sales From 1980 to 2016") +  # Adds plot title
   theme_minimal() +  # Applies a minimal theme
   theme(
     plot.title = element_text(family = "serif", size = 20),  # Customizes plot title
@@ -82,11 +82,13 @@ ggplot(global_sales, aes(x = year, y = global_sales)) +  # Specifies data and ae
     # Customizes y-axis title
     axis.title.x = element_text(family = "sans", size = 15, face = "bold"),  
     # Customizes x-axis title
-    axis.text.x = element_text(family = "serif", face = "bold", size = 5),  
+    axis.text.x = element_text(family = "serif", face = "bold", size = 10),  
     # Customizes x-axis text
     axis.text.y = element_text(family = "serif", face = "italic", size = 13),  
     # Customizes y-axis text
-    legend.position = "none"  # Removes legend
+    legend.position = "none",  # Removes legend
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()
   )
 
 ```
@@ -110,7 +112,7 @@ ggplot(genre_distribution_2008, aes(x = "", y = genre_proportion, fill = genre))
             # Add labels with genre name and proportion
             position = position_stack(vjust = 0.5),  # Labels for each slice
             size = 3, angle = 0) +  # Set label size and angle
-  labs(title = "Genre Popularity in 2008") +  # Add plot title
+  labs(title = "Video Game Genre Popularity in 2008") +  # Add plot title
   theme_void() +  # Use a minimal theme without background elements
   theme(legend.position = "none")  # Remove the legend
 
@@ -152,7 +154,7 @@ ggplot(top_publisher_sales, mapping = aes(x = year, y = global_sales)) +
   # Set the y-axis label
   ylab("Global Sales (in millions)") +
   # Add a title to the chart
-  ggtitle("Global Sales of Game Publishers From 1980 to 2016") +
+  ggtitle("Global Sales of Video Game Publishers From 1980 to 2016") +
   # Use the 'minimal' theme
   theme_minimal() +
   # Customize the appearance of the plot title, axis titles, and axis text
@@ -160,7 +162,9 @@ ggplot(top_publisher_sales, mapping = aes(x = year, y = global_sales)) +
         axis.title.y = element_text(family = "sans", size = 15, face = "bold"),
         axis.text.x = element_text(family = "serif", face = "bold", size = 5),
         axis.text.y = element_text(family = "serif", face = "italic", size = 7),
-        legend.position = "none") +
+        legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank()) +
   # Adjust the x-axis to show years in increments of 5, based on the range of years in the dataset
   scale_x_continuous(breaks = seq(min(top_publisher_sales$year),
                                   max(top_publisher_sales$year), by = 5))
@@ -168,6 +172,7 @@ ggplot(top_publisher_sales, mapping = aes(x = year, y = global_sales)) +
 ```
 
 7.  
+
     -   In my 2nd visualization, I've never made a pie chart before so I had to figure out how to do that. Also putting the genre and percentage in each slice was difficult for me to figure out. I'll eventually make it look neater with the slice labels aligned nicely in each slice. In my 3rd visualization, it was really rough to find and isolate the top 15 publishers from my data while also keeping the global sales and year column. After doing that, making the graph itself wasn't super hard.
     -   For my visualizations, I really only need tidyverse (ggplot2). If I decide to make an advanced plot (like a sunburst or tree map), I'll definitely need to use something different. If I end up adding more detail or cool visuals to my plots, I'll most likely need other packages.
     -   As for advice, I would like to know if grid lines on my 1st and 3rd visuals are necessary. I would also like to know if there is a better or cooler way to visualize the questions I am asking.
