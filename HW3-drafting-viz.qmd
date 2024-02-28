@@ -82,7 +82,7 @@ ggplot(global_sales, aes(x = year, y = global_sales)) +  # Specifies data and ae
     # Customizes y-axis title
     axis.title.x = element_text(family = "sans", size = 15, face = "bold"),  
     # Customizes x-axis title
-    axis.text.x = element_text(family = "serif", face = "bold", size = 10),  
+    axis.text.x = element_text(family = "serif", face = "bold", size = 5),  
     # Customizes x-axis text
     axis.text.y = element_text(family = "serif", face = "italic", size = 13),  
     # Customizes y-axis text
@@ -92,6 +92,18 @@ ggplot(global_sales, aes(x = year, y = global_sales)) +  # Specifies data and ae
   )
 
 ```
+
+adjust the x-axis so it only goes to the accurate real world values
+
+take out some years on the x-axis (every 3-5) (same with grid lines) (add in major y-axis grid lines)
+
+add in significant year points represented by gaming icons
+
+Put at bottom of info graphic (heart beat of the info graphic)
+
+take away points (heart beats don't have points)
+
+adjust the font so it matches a lot better
 
 2nd Graph (only for 2008 right now but will eventually do one for each year) (realized a line plot would be a mess so I decided to do a pie chart instead of a line plot like in my hand drawn visual)
 
