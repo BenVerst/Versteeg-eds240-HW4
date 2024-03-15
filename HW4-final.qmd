@@ -1,0 +1,300 @@
+---
+title: "Homework Assignment #4" 
+subtitle: ""
+author: "Benjamin Versteeg"
+date: 2024-03-09
+toc: true
+format:
+  html:
+    embed-resources: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r message=FALSE, warnings=FALSE}
+# Load packages
+library(tidyverse)
+library(patchwork)
+library(ggimage)
+library(extrafont)
+library(showtext)
+
+vgsales <- read_csv("data/vgsales.csv") # Read in data
+
+vgsales_clean <- vgsales %>%
+  janitor::clean_names() %>% # Cleans column names
+  filter(year <= 2010) # Filters to 2010 and before
+```
+
+```{r}
+font_add_google("Press Start 2P") # add font from google
+font_add_google("Aldrich") # add font from google
+showtext_auto() # Searches for the font in the code
+```
+
+1st Graph
+
+```{r message=FALSE, warnings =FALSE}
+# Aggregate global sales data by year
+sales_global <- aggregate(
+  list(global_sales = vgsales_clean$global_sales), # Creates a list where 'global_sales' is the name of the aggregated data.
+  list(year = vgsales_clean$year), # Creates a list where 'year' is the grouping variable.
+  sum # Sums up the global sales for each year.
+)
+
+```
+
+```{r message=FALSE, warning=FALSE}
+sales <- ggplot(sales_global, aes(x = year, y = global_sales)) +  # Initializes plot with data and mappings
+  geom_line(color = "red", group = 1, size = 2) +  # Draws a red line to represent global sales over years
+  xlab("Year") +  # Sets the label for the x-axis
+  ylab("Global Sales (in millions)") +  # Sets the label for the y-axis
+  ggtitle("Number of Global Video Game Sales Per Year") +  # Sets the title of the plot
+  theme_minimal() +  # Applies a minimal theme for aesthetic simplicity
+  theme(
+    plot.margin = margin(.8, .8, .8, .8, "cm"),  # Sets the margin around the plot
+    plot.background = element_rect(fill = "#220F30"),  # Sets the plot background color
+    panel.background = element_rect(fill = "#220F30", color = "#220F30"),  # Sets the panel background color
+    text = element_text(color = "yellow"),  # Sets the color of text elements
+    axis.text = element_text(color = "yellow"),  # Sets the axis text color
+    plot.title = element_text(color = "yellow", family = "Press Start 2P", size = 80, hjust = 0.5, margin = margin(b = 20, unit = "pt")),  # Customizes the plot title appearance
+    axis.title.y = element_text(color = "yellow", family = "Aldrich", size = 70, margin = margin(r = 15, unit = "pt")),  # Customizes the y-axis title appearance
+    axis.title.x = element_text(color = "yellow", family = "Aldrich", size = 70, margin = margin(t = 15, unit ="pt")),  # Customizes the x-axis title appearance
+    axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1, family = "Aldrich", size = 50),  # Customizes the appearance of x-axis text
+    axis.text.y = element_text(family = "Aldrich", size = 50),  # Customizes the appearance of y-axis text
+    legend.position = "none",  # Removes the legend from the plot
+    panel.grid.major.y = element_line(color = "grey"),  # Sets the color of major grid lines on the y-axis
+    panel.grid.minor.y = element_line(color = "grey"),  # Sets the color of minor grid lines on the y-axis
+    panel.grid.minor.x = element_blank(),  # Removes minor grid lines on the x-axis
+    panel.grid.major.x = element_blank(),  # Removes major grid lines on the x-axis
+    axis.ticks.x = element_line(color = "yellow", size = .8),  # Customizes the appearance of x-axis ticks
+    axis.ticks.length.x = unit(0.2, "cm")) +  # Sets the length of x-axis ticks
+  scale_x_discrete(breaks = seq(min(sales_global$year), max(sales_global$year), by = 2)) +  # Sets discrete breaks on the x-axis for years 
+  
+  #E for everyone Logo
+# Adds an image to the plot for the year 1994
+geom_image(data = sales_global %>%
+             filter(year == 1994) %>%  # Picks the 1994 x-axis value
+             mutate(y_pos = global_sales + 480),  # Position of the new point
+           aes(x = year, y = y_pos, image = "figures/Esrb.png"),  # Adds png image to the specified location
+           size = .23) +  # Sets the size of the image
+
+# Draws a line segment from the image to the data point for the year 1994
+geom_segment(data = sales_global %>%
+                 filter(year == 1994),  # Picks the 1994 x-axis value
+               aes(x = year, xend = year,  # Sets the start and end x positions for the line segment
+                   y = global_sales + 350, yend = global_sales + 1),  # Sets the start and end y positions for the line segment
+               color = "yellow",  # Sets the color of the line segment
+               size = 1.1,  # Sets the thickness of the line segment
+               lineend = "round") +  # Sets the style of the line segment end
+
+    #Playstation Logo
+  geom_image(data = sales_global %>%
+             filter(year == 1995) %>%
+             mutate(y_pos = global_sales + 190),  
+           aes(x = year, y = y_pos, image = "figures/playstation.png"),
+           size = .25) + 
+  geom_segment(data = sales_global %>%
+                 filter(year == 1995), 
+               aes(x = year, xend = year, 
+                   y = global_sales + 100, yend = global_sales + 1), 
+               color = "yellow", size = 1.1, lineend = "round") +
+  
+  #Nintendo 64 Logo
+  geom_image(data = sales_global %>%
+             filter(year == 1996) %>%
+             mutate(y_pos = global_sales + 270),  
+           aes(x = year, y = y_pos, image = "figures/nintendo64.png"),
+           size = .25) +  
+  geom_segment(data = sales_global %>%
+                 filter(year == 1996), 
+               aes(x = year, xend = year, 
+                   y = global_sales + 180, yend = global_sales + 1), 
+               color = "yellow", size = 1.1, lineend = "round") +
+
+  #Playstation 2 Logo
+  geom_image(data = sales_global %>%
+             filter(year == 2000) %>%
+             mutate(y_pos = global_sales - 110),  
+           aes(x = year, y = y_pos, image = "figures/playstation2.png"),
+           size = .23) +  
+  geom_segment(data = sales_global %>%
+                 filter(year == 2000), 
+               aes(x = year, xend = year, 
+                   y = global_sales - 25, yend = global_sales - 1), 
+               color = "yellow", size = 1.1, lineend = "round") +
+  
+  #Nintendo gamecube Logo
+  geom_image(data = sales_global %>%
+             filter(year == 2001) %>%
+             mutate(y_pos = global_sales + 130),  
+           aes(x = year, y = y_pos, image = "figures/gamecube.png"),
+           size = .21) +  
+  geom_segment(data = sales_global %>%
+                 filter(year == 2001), 
+               aes(x = year, xend = year, 
+                   y = global_sales + 38, yend = global_sales + 1), 
+               color = "yellow", size = 1.1, lineend = "round") +
+  
+   #Xbox Logo
+  geom_image(data = sales_global %>%
+             filter(year == 2001) %>%
+             mutate(y_pos = global_sales + 295),  
+           aes(x = year, y = y_pos, image = "figures/xbox.png"),
+           size = .21) +
+  
+  #NES Logo
+  geom_image(data = sales_global %>%
+             filter(year == 1985) %>%
+             mutate(y_pos = global_sales + 230),  
+           aes(x = year, y = y_pos, image = "figures/nes.png"),
+           size = .40) +  
+  geom_segment(data = sales_global %>%
+                 filter(year == 1985), 
+               aes(x = year, xend = year, 
+                   y = global_sales + 150, yend = global_sales + 1), 
+               color = "yellow", size = 1.1, lineend = "round") +
+  
+    #Steam Logo
+  geom_image(data = sales_global %>%
+             filter(year == 2003) %>%
+             mutate(y_pos = global_sales - 200),  
+           aes(x = year, y = y_pos, image = "figures/steam.png"),
+           size = .24) +  
+  geom_segment(data = sales_global %>%
+                 filter(year == 2003), 
+               aes(x = year, xend = year, 
+                   y = global_sales - 100, yend = global_sales - 1), 
+               color = "yellow", size = 1.1, lineend = "round") +
+  
+    #Wii Logo
+  geom_image(data = sales_global %>%
+             filter(year == 2006) %>%
+             mutate(y_pos = global_sales - 200),  
+           aes(x = year, y = y_pos, image = "figures/wii.png"),
+           size = .26) +  
+  geom_segment(data = sales_global %>%
+                 filter(year == 2006), 
+               aes(x = year, xend = year, 
+                   y = global_sales - 103, yend = global_sales - 1), 
+               color = "yellow", size = 1.1, lineend = "round") +
+  
+  #Gameboy Logo
+  geom_image(data = sales_global %>%
+             filter(year == 1989) %>%
+             mutate(y_pos = global_sales + 220),  
+           aes(x = year, y = y_pos, image = "figures/gameboy.png"),
+           size = .25) +  
+  geom_segment(data = sales_global %>%
+                 filter(year == 1989), 
+               aes(x = year, xend = year, 
+                   y = global_sales + 100, yend = global_sales + 1), 
+               color = "yellow", size = 1.1, lineend = "round") +
+  
+   #Xbox 360 Logo
+  geom_image(data = sales_global %>%
+             filter(year == 2005) %>%
+             mutate(y_pos = global_sales + 190),  
+           aes(x = year, y = y_pos, image = "figures/350.png"),
+           size = .65) +  
+  geom_segment(data = sales_global %>%
+                 filter(year == 2005), 
+               aes(x = year, xend = year, 
+                   y = global_sales + 135, yend = global_sales + 1), 
+               color = "yellow", size = 1.1, lineend = "round")
+
+# Saves the plot to a file with specified dimensions and resolution
+ggsave("plots/sales.png", plot = sales, width = 18, height = 5, dpi = 300)
+```
+
+2nd Graph
+
+```{r message=FALSE, warning=FALSE}
+# Aggregate data by year and genre
+sales_by_year_genre <- vgsales_clean %>%
+  group_by(year, genre) %>%
+  summarize(total_sales = sum(global_sales, na.rm = TRUE)) %>%  # Sum sales by year and genre, ignoring NA values
+  ungroup() %>%
+  mutate(genre = factor(genre)) %>%  # Convert genre to a factor for ordered plotting
+  mutate(genre = fct_relevel(genre, "Misc", after = Inf)) %>%   # Move the "Misc" genre to the end of the factor levels
+  mutate(genre = fct_rev(genre))  # Reverse the levels of the genre factor to change the plot order
+
+# Find range for total_sales to set meaningful breaks for the color scale
+range_sales <- range(sales_by_year_genre$total_sales, na.rm = TRUE)
+
+# Create equally spaced breaks for the color scale based on sales range
+sales_breaks <- seq(from = range_sales[1], to = range_sales[2], length.out = 5)
+
+# Constructing the heatmap plot
+genre <- ggplot(sales_by_year_genre, aes(x = factor(year), y = genre, fill = total_sales)) +
+  geom_tile(color = "black") +  # Create tiles for each year-genre combination with black borders
+  scale_fill_gradient(low = "yellow", high = "darkgreen", breaks = sales_breaks, labels = scales::comma) +  # Color scale from yellow to dark green
+  labs(title = "Global Genre Sales Per Year", x = "Year", y = "Genre", fill = "Total Sales") +  # Add labels to the plot
+  theme_classic() +  # Use classic theme as a base
+  theme(  # Customizing various theme elements for aesthetics
+    plot.margin = margin(.3, .3, .3, .3, "cm"),
+    plot.background = element_rect(fill = "black"),  
+    panel.background = element_rect(fill = "black", colour = "black"),
+    text = element_text(color = "green"), 
+    axis.title = element_text(color = "green", family = "Aldrich", size = 70),
+    axis.title.x = element_text(margin = margin(t = 10, unit = "pt")),
+    axis.title.y = element_text(margin = margin(r = 10, unit = "pt")),
+    axis.text = element_text(color = "green", family = "Aldrich", size = 55),
+    axis.text.y = element_text(size = 45),
+    plot.title = element_text(color = "green", family = "Press Start 2P", size = 75, hjust = 0.5, margin = margin(b = 15, unit = "pt")), 
+    legend.background = element_rect(fill = "black"),
+    legend.title = element_text(color = "green", family = "Aldrich", size = 65, margin = margin(b = 10, unit = "pt")),
+    legend.text = element_text(family = "Aldrich", size = 55),
+    legend.key.size = unit(1, "cm"),  # Increase the size of legend keys
+    legend.key.width = unit(.5, "cm"),
+    axis.text.x = element_text(angle = 55, vjust = 1, hjust = 1),  # Tilt x-axis text for better legibility
+    axis.ticks.x = element_line(color = "green", size = .8),
+    axis.ticks.length.x = unit(0.2, "cm"),
+    axis.ticks.y = element_line(color = "green", size = .8),
+    axis.ticks.length.y = unit(0.2, "cm")) +  # Customize tick appearance and lengths
+  scale_x_discrete(breaks = seq(min(sales_by_year_genre$year), max(sales_by_year_genre$year), by = 2))  # Adjust x-axis breaks to every 2 years for clarity
+
+
+# Saves the plot to a file with specified dimensions and resolution
+ggsave("plots/genre.png", plot = genre, width = 15, height = 5, dpi = 300)
+```
+
+3rd Graph
+
+```{r message=FALSE, warning = FALSE}
+year_count <- aggregate(
+  list(global_sales = vgsales_clean$global_sales), # Creates a list where 'global_sales' is the name of the aggregated data.
+  list(year = vgsales_clean$year), # Creates a list where 'year' is the grouping variable.
+  length) # Counts the number of occurrences for each year.
+
+# Constructing the bar plot
+count <- ggplot(year_count, aes(x = year, y = global_sales)) +  
+  geom_bar(stat = "identity", fill = "yellow", color = "black") +  
+  xlab("Year") +  
+  ylab("Count") +  
+  ggtitle("Global Video Game Counts Per Year") +  
+  theme_minimal() +  
+  theme( # Customizing various theme elements for aesthetics
+    plot.margin = margin(.3, .3, .3, .3, "cm"),
+    plot.background = element_rect(fill = "black"),  
+    panel.background = element_rect(fill = "black", colour = "black"),
+    text = element_text(color = "magenta"), 
+    axis.title = element_text(color = "magenta", family = "Aldrich", size = 70),
+    axis.title.x = element_text(margin = margin(t = 10, unit = "pt")),
+    axis.title.y = element_text(margin = margin(r = 10, unit = "pt")),
+    axis.text = element_text(color = "magenta", family = "Aldrich", size = 55),
+    axis.text.y = element_text(family = "Aldrich", size = 55),  
+    plot.title = element_text(color = "magenta", family = "Press Start 2P", size = 75, hjust = 0.5, margin = margin(b = 15, unit = "pt")), 
+    legend.position = "none", 
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    panel.grid.major.y = element_line(color = "grey"),
+    panel.grid.minor.y = element_line(color = "grey"),
+    axis.text.x = element_text(angle = 55, vjust = 1, hjust = 1),
+    axis.ticks.x = element_line(color = "magenta", size = .8),  # Customize x-axis ticks
+    axis.ticks.length.x = unit(0.2, "cm")) +
+  scale_x_discrete(breaks = seq(min(year_count$year), max(year_count$year), by = 2))
+
+# Saves the plot to a file with specified dimensions and resolution
+ggsave("plots/count.png", plot = count, width = 15, height = 5, dpi = 300)
+```
